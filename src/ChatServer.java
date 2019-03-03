@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,9 +31,21 @@ public class ChatServer {
     private static final Pattern AUTH_PATTERN = Pattern.compile("^/auth (\\w+) (\\w+)$");
 
 
-    private AuthService authService = new AuthServiceImpl();
+    private AuthService authService;
+
+    //Создаем экземпляр авторизации
+    {
+        try {
+            authService = new AuthServiceImpl();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Map<String, ClientHandler> clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
+
     public static void main(String[] args) {
         ChatServer chatServer = new ChatServer();
         chatServer.start(7777);
