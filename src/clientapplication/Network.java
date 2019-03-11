@@ -19,6 +19,7 @@ public class Network implements Closeable {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
+    private MessageWriterHistory history = new  MessageWriterHistory ("","", "", "");
     private final MessageSender messageSender;
     private final Thread receiver;
 
@@ -46,16 +47,18 @@ public class Network implements Closeable {
                             Message msg = new Message(matcher.group(1), username,
                                     matcher.group(2));
                             messageSender.submitMessage(msg);
+
+                            //Пишем
+                            history.messageWriter(matcher.group(1), "I", username, matcher.group(2));
+
                         } else if (text.startsWith(USER_CONSIST_PATTERN)) {
+
                             //Если  видим паттерн на добавление пользователя - вычленяем имя.
                             String addUser;
                             addUser = text.replace (USER_CONSIST_PATTERN, "");
                             System.out.println("add user:" + addUser);
 
                             String[] userArr = addUser.split("//");
-
-                           // messageSender.submitUser(new String[] {"ivan", "petr", "julia", "gaga"});
-
                             messageSender.submitUser(userArr);
                         }
                     } catch (IOException e) {
@@ -70,7 +73,13 @@ public class Network implements Closeable {
 
             public void sendMessageToUser(Message message) {
         sendMessage(String.format(MESSAGE_SEND_PATTERN, message.getUserTo(), message.getText()));
-    }
+
+                try {
+                    history.messageWriter(message.getUserTo(), username, "me", message.getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
     private void sendMessage(String msg) {
         try {

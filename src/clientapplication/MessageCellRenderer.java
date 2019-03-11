@@ -6,7 +6,6 @@ import java.awt.*;
 public class MessageCellRenderer extends JPanel implements ListCellRenderer<Message> {
 
     private JLabel userName;
-
     private JLabel message;
 
     public MessageCellRenderer() {
@@ -26,7 +25,11 @@ public class MessageCellRenderer extends JPanel implements ListCellRenderer<Mess
         setBackground(list.getBackground());
         userName.setOpaque(true);
         userName.setText(value.getUserFrom());
+
+
         message.setText(value.getText());
+
+
         return this;
     }
 }

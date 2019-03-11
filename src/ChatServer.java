@@ -6,19 +6,21 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Java. Level 2. Lesson 8.
+ * Java. Level 3. Lesson 3.
   * @version 03.03.2019
  */
 
+
 /*
-Lesson 2
-1. Добавить в сетевой чат авторизацию через базу данных SQLite.
-2.*Добавить в сетевой чат возможность смены ника.
+Lesson 3
+1. Добавить в сетевой чат запись локальной истории в текстовый файл на клиенте.
+2. После загрузки клиента показывать ему последние 100 строк чата.
 */
 
 
@@ -30,9 +32,21 @@ public class ChatServer {
     private static final Pattern AUTH_PATTERN = Pattern.compile("^/auth (\\w+) (\\w+)$");
 
 
-    private AuthService authService = new AuthServiceImpl();
+    private AuthService authService;
+
+    //Создаем экземпляр авторизации
+    {
+        try {
+            authService = new AuthServiceImpl();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Map<String, ClientHandler> clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
+
     public static void main(String[] args) {
         ChatServer chatServer = new ChatServer();
         chatServer.start(7777);
